@@ -1,0 +1,18 @@
+{block buttons}
+        <a class="btn btn-primary" n:href=":Admin:Attributes:addValue $attribute->id" n:if="$user->identity->role==9"><i class="fas fa-plus"></i> Přidat hodnotu</a>
+{/block}
+
+{block content}
+
+
+      <div class="head">
+        <h1 class="card-title">
+          Správa hodnot atributu {$attribute->name}
+        </h1>
+      </div>
+
+	  <div class="sortable table-responsive" data-action="{link sortValues!}">
+	  	{control values}
+	  </div>
+
+{/block}

@@ -1,0 +1,251 @@
+{layout ../@layout.latte}
+{block content}
+    <section class="top containers">
+        <div class="container">
+            <h1 class="title underline">{if !empty($catName)}{=strtolower($catName)}{else}{$page->name}{/if}</h1>
+            <div class="categoryDesc" n:if="!empty($catDesc)">{$catDesc|noescape}</div>
+            <div class="filter">
+                <form action="{link this}" method="get">
+                    <ul class="list-inline" data-aos="fade-in" data-aos-duration="200" data-aos-delay="200">
+                    {*
+                        {var $contAttr = $presenter->attributeManager->getForMaterial()}
+                        {var attrTypes = array(4=>"typ-hrubost")}
+                        {var $usedFilter = false}
+                        <li class="list-inline-item {$attrTypes[$attr->id]}" n:foreach="$contAttr as $attr">
+                        	{if !empty($_GET["a".$attr->id])}{php $usedFilter = true}{/if}
+                            <label class="select">
+	                            <select name="a{$attr->id}" class="form-select" aria-label="{$attr->name}" onchange="submit(this);">
+	                                <option {if empty($_GET["a".$attr->id])}selected="selected"{/if} value="">{$attr->name}</option>
+	                                {var $values = $presenter->attributeManager->getValuesArr($attr->id)}
+	                                <option n:foreach="$values as $key=>$val"  {if !empty($_GET["a".$attr->id]) && $_GET["a".$attr->id]==$key}selected="selected"{/if} value="{$key}">{$val} {$attr->unit|noescape}</option>
+	                            </select>
+                            </label>
+                        </li>
+                        <!-- ./druh odpadu -->
+                        <!-- ./turbokontejner -->
+                    </ul>
+                    *}
+                    <ul class="list-inline vat" data-aos="fade-in" data-aos-duration="200" data-aos-delay="200">
+                        <li class="list-inline-item vat">
+                            <div class="form-check">
+                            	<label class="form-check-label" for="sDPH">
+                            		S DPH
+                            	</label>
+                            	<input class="form-check-input formFieldVat" type="checkbox" data-on="{link setVat! true}" data-off="{link setVat! false}" name="dph" id="sDPH"{if $vat->isWith}checked{/if}>
+                            </div>
+                        </li>
+                        <li class="list-inline-item vat">
+                            <div class="form-check">
+                                <label class="form-check-label" for="sDPH">
+                                    Bez DPH
+                                </label>
+                                <input class="form-check-input formFieldVat" type="checkbox" data-on="{link setVat! false}" data-off="{link setVat! true}" name="dph" id="sDPH"{if !$vat->isWith}checked{/if}>
+                            </div>
+                        </li>
+                        <!-- ./dph -->
+                    </ul>
+                    {*
+                    	<button class="btn btn-primary btn-deselect" data-aos="fade-in" data-aos-duration="200" data-aos-delay="300"><a n:href=":Front:Homepage:page $page->alias" n:if="$usedFilter"></a>Zrušit výběr</button>
+                    *}
+                </form>
+                <!-- ./form -->
+                <script>
+                	$(document).ready(function(){
+						$(".formFieldVat").change(function(e){
+							e.preventDefault();
+							var checked = $(this).prop("checked");
+							if(checked){
+								var link = $(this).data("on");
+							}
+							else{
+								var link = $(this).data("off");
+							}
+							$.get(link);
+						});
+                	});
+                </script>
+            </div>
+            <img class="stripe" src="{$basePath}/img/stripe.png" alt="Obrázek pruhů">
+        </div>
+        <!-- ./filter -->
+        <img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+    </section>
+    <!-- ./top -->
+    <section class="products materials" data-image-src="{$basePath}/img/_MG_4880.jpg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xs-12 col-sm-6 col-lg-4" n:foreach="$containers as $container">
+    				{var $isInAction = false}
+    				{var $prices = $presenter->productManager->getPrices($container->id)}
+    				{foreach $prices as $price}
+    					{if !empty($price->priceOld)}
+    						{var $isInAction = true}
+    					{/if}
+    				{/foreach}
+    				{var $paVals = $presenter->getProductAttributeValues($container->attributes)}
+                    <div class="col-container">
+                        <h2>{$container->name}{if !empty($container->perex)} <span>{$container->perex}</span>{/if} {if $isInAction}<span class="action">akce</span>{/if}</h2>
+                        {var $mainImg = $presenter->productManager->getMainPhoto($container->id)}
+                        <div class="container-image">
+                            {$mainImg|webpImage:null:null:$container->name}
+                        </div>
+                        <div class="accordion accordion-flush chocolat-parent" id="containers{$container->id}">
+                            {var $prices = $presenter->productManager->getPrices($container->id)}
+                            <div class="accordion-item" n:foreach="$prices as $price">
+                                <div class="accordion-header" id="container-{$price->id}">
+                                    <button class="accordion-button collapsed {if empty($attVals[$price->attributeValue]->desc)}empty{/if}" type="button" {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" data-bs-target="#container-collapse{$price->id}"{/if} aria-expanded="false" aria-controls="{$price->id}">
+                                        <input class="variantRadio form-check-input" type="radio" name="variant" value="{$price->id}" />
+                                        <em>{$attVals[$price->attributeValue]->name}</em>
+                                        {if $price->type==1}
+                                        	<span class="price">{$price->priceFrom*$vat->koef|number:0:',':' '} Kč{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '}{/if}{if !empty($price->priceOld)}<em class="priceOld"><abbr title="Původní cena">{$price->priceOld*$vat->koef|number:0:',':' '} Kč</abbr></em>{/if}</span>
+                                        {/if}
+                                        {if $price->type==2}
+                                        	<span class="price">{$price->text} Kč</span>
+                                        {/if}
+                                    </button>
+                                </div>
+                                <div id="container-collapse{$price->id}" class="accordion-collapse collapse" aria-labelledby="container-{$price->id}" data-bs-parent="#containers{$container->id}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+                                    <div class="accordion-body">
+                                        {$attVals[$price->attributeValue]->desc|noescape}
+                                        {if !empty($attVals[$price->attributeValue]->file)}
+                                        	<a href="{$attVals[$price->attributeValue]|thumb}" class="chocolat-image" title="Zobrazit obrázek">Více viz foto</a>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ./prices -->
+                        <span class="without-vat">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH  za 1 {if $container->id != $settings->betonProduct}tunu{else}m<sup>3</sup>{/if}</span>
+                        <button type="button" class="btn btn-primary btn-arrow btn-red orderContainer orderMaterial" data-id="{$container->id}" {*data-bs-toggle="modal" data-bs-target="#container-{$container->alias}Modal"*} title="Vybrat a objednat kontejner">Objednat materiál <i class="fa-solid fa-angles-right"></i></button>
+                    </div>
+                    <!-- ./col container -->
+                </div>
+            </div>
+            <!-- ./containers row -->
+            <div class="help">
+                Nevíte si rady s výběrem vhodného materiálu?
+                <span>Zavolejte nám na 602 20 30 44</span>
+            </div>
+            <!-- ./help -->
+            <div class="calculation-bar">
+                Kalkulace do 24 hodin
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        Individuální ceny
+                    </li>
+                    <li class="list-inline-item">
+                        Množstevní slevy
+                    </li>
+                </ul>
+                <a class="btn btn-primary btn-arrow btn-white" href="/poptavka" title="Poptat přistavení kontejneru">Poptávka <i class="fa-solid fa-angles-right"></i></a>
+            </div>
+            <!-- ./calculation -->
+        </div>
+        <!-- ./container -->
+        {include '../_parts/footerMenu.latte', class=>'background'}
+        <!-- ./bottom navigation -->
+        <div class="rectangle"></div>
+        <!-- ./rectangle -->
+    </section>
+    <!-- ./products -->
+{/block}
+
+{block modals}
+     <div n:foreach="$containers as $container" class="modal" id="container-{$container->alias}Modal" tabindex="-1" aria-labelledby="container-3m3-3tunyLabel" aria-hidden="true" n:if="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            	{var $paVals = $presenter->getProductAttributeValues($container->attributes)}
+                <h2>{$container->name}{if !empty($container->perex)} <span>{$container->perex}</span>{/if}</h2>
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                    {form addToOrderForm}
+                    	{input isContainer, value=>"2"}
+                    	{var $prices = $presenter->productManager->getPrices($container->id)}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        Typ materiálu
+                                    </td>
+                                    <td>
+                                        Cena materiálu
+                                    </td>
+                                    <td>
+                                        Počet
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr n:foreach="$prices as $price">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" name="prices[{$price->id}]"> <a {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" href="#container-{$container->alias}{$price->id}"{/if} role="button" aria-expanded="false" aria-controls="container-{$container->alias}{$price->id}" title="Co sem patří a nepatří?">{$attVals[$price->attributeValue]->name}</a>
+                                        <div class="collapse type-description" id="container-{$container->alias}{$price->id}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+                                            {$attVals[$price->attributeValue]->desc|noescape}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {if $price->type==1}
+                                        	{$price->priceFrom*$vat->koef|number:0:',':' '} <em>Kč</em>{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} <em>Kč</em>{/if}
+                                        {/if}
+                                        {if $price->type==2}
+                                        	{$price->text}
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <label class="select">
+                                            <select name="amounts[{$price->id}]">
+                                                <option n:for="$i=1;$i<=5;$i++" value="{$i}">{$i}</option>
+                                            </select>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary btn-arrow btn-white btn-cancel cancelRow" href="#" title="Objednat kontejner">Zrušit <i class="fa-solid fa-xmark"></i></a>
+                                        <a class="btn btn-primary btn-arrow btn-white includeRow" href="#" title="Objednat kontejner">Vybrat <i class="fa-solid fa-angles-right"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <span class="vat">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH za 1 {if $container->id != $settings->betonProduct}tunu{else}m<sup>3</sup>{/if}</span>
+                                        <button class="btn btn-primary btn-arrow btn-red orderButton disabled" title="Objednat kontejner">Přejít do objednávky <i class="fa-solid fa-angles-right"></i></button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    {/form}
+                </div>
+            </div>
+        </div>
+        <div class="modal-rectangle">
+            <img class="stripe" src="{$basePath}/img/stripe-modal.png" alt="Obrázek pruhů">
+            <img class="cars" src="{$basePath}/img/cars-modal.png" alt="Obrázek Siegl aut">
+        </div>
+    </div>
+{/block}
+{block scripts}
+    <script>
+    	$(document).ready(function(){
+			$(".accordion-button").click(function(){
+				$(this).find(".variantRadio").prop("checked", true);
+				$(".variantRadio").closest(".accordion-item").removeClass("active");
+				$(this).closest(".accordion-item").addClass("active");
+			});
+			$(".variantRadio").click(function(){
+				$(this).closest(".accordion-button").trigger("click");
+			});
+			$(".orderContainer").click(function(e){
+				e.preventDefault();
+				var link = {link addToOrderM!};
+				link = link + "&c="+$(this).data("id");
+				var checkedRadio = $(this).closest(".col-container").find(".variantRadio:checked");
+				if(checkedRadio.length > 0){
+					link = link + "&p="+checkedRadio.val();
+				}
+				$.get(link);
+			});
+    	});
+   	
+    </script>
+{/block}

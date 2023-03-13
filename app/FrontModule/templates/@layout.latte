@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs" class="notouch yeswebp">
+
+	{include '_parts/head.latte'}
+	
+	<body>
+		{include '_parts/header.latte'}
+        <!-- ./header -->
+        {*
+        {foreach $flashes as $flash}
+            <div class="container alert-container">
+                <div class="alert {$flash->type}">{$flash->message}</div>
+            </div>
+        {/foreach}
+        *}
+
+		<div class="container">
+        	{block content}{/block}
+        </div>
+
+        {include '_parts/footer.latte'}
+
+		{block modals}
+		{/block}
+		
+		{addJs
+			'bootstrap.min.js',
+			'parallax.min.js',
+			'jquery.chocolat.js',
+			'custom.js',
+		}
+        
+
+		{block scripts}{/block}
+	</body>
+</html>

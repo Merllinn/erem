@@ -1,0 +1,40 @@
+{layout ../@layout.latte}
+{block content}
+		<div class='row'>
+			<div class='col-md-6 chocolat-parent product-gallery'>
+				<a href='{$mainImg|thumb}' class='chocolat-image'>
+					<img class='img-fluid' src="{$mainImg|thumb}">
+				</a>
+				<div class='row gallery'>
+					<div class='col-6 col-md-3' n:foreach="$images as $image">
+						<a href='{$image|thumb}' class='chocolat-image'><img class='img-fluid' src='{$image|thumb}' alt='' title='' /></a>
+					</div>
+				</div>
+			</div>
+			<div class='col-md-6'>
+				<div class='product-description chocolat-parent'>
+					<h1 class='product-title'>{$product->name}</h1>
+					<span class='color' n:if="!empty($product->perex)">{$product->perex}</span>
+					<div class='description'>
+						{$product->description|noescape}
+					</div>
+					<div class='price'>
+						<span class='price'>{$product->price} Kč</span>
+					</div>
+					<p class='unavailable' n:if="$product->amount<=0"><strong>Bohužel, tenhle produkt je vyprodanej a už ho nikdy prodávat nebudeme.</strong></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="benefits">
+		<div class="container">
+			<ul class="list-inline">
+				<li class="list-inline-item odesilame">
+					Odesíláme do dvou pracovních dnů				</li>
+				<li class="list-inline-item nakupem">
+					Nákupem podpoříš naši tvorbu				</li>
+				<li class="list-inline-item produkty">
+					Produkty vyrábíme z těch nejlepších materiálů				</li>
+			</ul>
+		</div>
+{/block}

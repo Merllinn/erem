@@ -1,0 +1,279 @@
+{layout ../@layout.latte}
+{block content}
+    <section class="top container-detail">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5 col-lg-4">
+                    <div class="sidebar">
+                        <h1>Kontejner <span>{$paVals[2]->name}{$paVals[2]->ref("attribute")->unit|noescape} / {$paVals[3]->name}{$paVals[3]->ref("attribute")->unit|noescape}</span></h1>
+                        <div class="sidebar-container {if $product->noOnlineOrder}noOrder{/if}">
+                            <table class="table">
+                                <tbody>
+                                    <tr data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="100">
+                                        <td>Objem:</td>
+                                        <td>{$paVals[2]->name}{$paVals[2]->ref("attribute")->unit|noescape}</td>
+                                    </tr>
+                                    <tr data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="200">
+                                        <td>Nosnost:</td>
+                                        <td>{$paVals[3]->name}{$paVals[3]->ref("attribute")->unit|noescape}</td>
+                                    </tr>
+                                    <tr data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="300">
+                                        <td>Rozměr:</td>
+                                        <td><abbr title="šířka x délka x výška">{$product->width} m x {$product->length} m x {$product->height} m</abbr></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- ./dimensions -->
+                            <div data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="450">
+                                <span class="pricelist">Ceník</span>
+                                <div class="sidebar-vat">
+                                    <span>zobrazit cenu</span>
+                                    <div class="form-check-container">
+                                        <div class="form-check">
+                                        	<label class="form-check-label" for="sDPH">
+                            					S DPH
+                            				</label>
+                            				<input class="form-check-input formFieldVat" type="checkbox" data-on="{link setVat! true}" data-off="{link setVat! false}" name="dph" id="sDPH"{if $vat->isWith}checked{/if}>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion accordion-flush chocolat-parent" id="{$product->alias}">
+		                            {var $prices = $presenter->productManager->getPrices($product->id)}
+		                            <div class="accordion-item" n:foreach="$prices as $price">
+		                                <div class="accordion-header" id="container-{$price->id}">
+                                            {if $product->noOnlineOrder}
+    		                                    <button class="accordion-button collapsed noOrder {if empty($attVals[$price->attributeValue]->desc)}empty{/if}" type="button" {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" data-bs-target="#container-collapse{$price->id}"{/if} aria-expanded="false" aria-controls="{$price->id}">
+    		                                        <em>{$attVals[$price->attributeValue]->name}</em>
+    		                                        {if $price->type==1}
+                                            			<span class="price">{$price->priceFrom*$vat->koef|number:0:',':' '} Kč{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} Kč{/if}{if !empty($price->priceOld)}<em class="priceOld"><abbr title="Původní cena">{$price->priceOld*$vat->koef|number:0:',':' '} Kč</abbr></em>{/if}</span>
+    		                                        {/if}
+    		                                        {if $price->type==2}
+                                            			<span class="price">{$price->text}</span>
+    		                                        {/if}
+    		                                    </button>
+                                            {else}
+                                                <button class="accordion-button collapsed {if empty($attVals[$price->attributeValue]->desc)}empty{/if}" type="button" {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" data-bs-target="#container-collapse{$price->id}"{/if} aria-expanded="false" aria-controls="{$price->id}">
+                                                    <input class="variantRadio form-check-input" type="radio" name="variant" value="{$price->id}" />
+                                                    <em>{$attVals[$price->attributeValue]->name}</em>
+                                                    {if $price->type==1}
+                                                        <span class="price">{$price->priceFrom*$vat->koef|number:0:',':' '} Kč{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} Kč{/if}{if !empty($price->priceOld)}<em class="priceOld"><abbr title="Původní cena">{$price->priceOld*$vat->koef|number:0:',':' '} Kč</abbr></em>{/if}</span>
+                                                    {/if}
+                                                    {if $price->type==2}
+                                                        <span class="price">{$price->text}</span>
+                                                    {/if}
+                                                </button>
+                                            {/if}
+		                                </div>
+		                                <div id="container-collapse{$price->id}" class="accordion-collapse collapse" aria-labelledby="container-{$price->id}" data-bs-parent="#{$product->alias}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+		                                    <div class="accordion-body">
+		                                        {$attVals[$price->attributeValue]->desc|noescape}
+		                                        {if !empty($attVals[$price->attributeValue]->file)}
+                                        			<a href="{$attVals[$price->attributeValue]|thumb}" class="chocolat-image" title="Zobrazit obrázek">Více viz foto</a>
+		                                        {/if}
+		                                    </div>
+		                                </div>
+		                            </div>
+                                </div>
+                                <!-- ./prices -->
+                                <span class="without-vat">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH</span>
+                            </div>
+	                        {if $product->noOnlineOrder}
+		                        <a class="btn btn-primary btn-arrow btn-red btn-phone" href="tel:602203044">602 20 30 44 <i class="fa-solid fa-angles-right"></i></a>
+	                        {else}
+                            	<button type="button" class="btn btn-primary btn-arrow btn-red orderContainer" data-id="{$product->id}" {*data-bs-toggle="modal" data-bs-target="#container-{$product->alias}Modal"*} title="Vybrat a objednat kontejner" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="450">Objednat online <i class="fa-solid fa-angles-right"></i></button>
+	                        {/if}
+                            
+                            <div class="or" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="500">
+                                <span>Nebo</span>
+                                <span class="phone">602 20 30 44</span>
+                                <span>Po - Ne 6:00 - 22:00</span>
+                            </div>
+                            <div class="or demand" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="500">
+                                <span>Nebo</span>
+                            </div>
+                            <a class="btn btn-primary btn-arrow btn-red" href="/poptavka" title="Zažádat o nevávaznou poptávku" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="550">Zadat poptávku <i class="fa-solid fa-angles-right"></i></a>
+                        </div>
+                        <!-- ./sidebar container -->
+                    </div>
+                </div>
+                <!-- ./sidebar -->
+                <div class="col-md-7 col-lg-8">
+                    <div class="container-content {$product->alias} chocolat-parent">
+                        <div class="container-size">
+                            <a class="chocolat-image" href="{$secondImg|thumb}" title="Zvětšit obrázek">{$secondImg|webpImage:null:null:$image->name}</a>
+                        </div>
+                        <a n:if="$product->id != 6 && $product->id != 7" class="btn btn-primary btn-manipulation chocolat-image" href="{$basePath}/images/manipulace.jpeg" title="Zobrazit prostor pro manipulaci" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" data-aos-duration="100" data-aos-easing="linear" data-aos-delay="2200">Zobrazit prostor pro manipulaci <i class="fa-solid fa-magnifying-glass"></i></a>
+                        <div class="waste-type" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="400">
+                            <h2>
+                                Jaký druh odpadu sem patří?
+                            </h2>
+                            <p>
+                                {$product->description|noescape}
+                            </p>
+                        </div>
+                        <!-- ./waste type -->
+                        <div class="speed" data-aos="fade-in" data-aos-duration="200" data-aos-easing="linear" data-aos-delay="500">
+                            <h2 class="title underline">Jak rychle vám kontejner přistavíme?</h2>
+                            <div class="warrant deliveryBlock">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        Garantujeme čas přistavení do <span class="number standardDelivery">1 - 4</span> <strong class="standardUnit">hodin</strong>
+                                    </li>
+                                    <li>
+                                        <a target="_blank" href="https://turbokontejnery.cz/">Turbokontejner</a> s přistavením do <span class="number turbodelivery">60</span> <strong class="turbounit">minut</strong>
+                                        <span class="turbo">(objednávka pouze telefonicky Po - Pá: 6:00 - 17:00, příplatek +490 Kč)</span>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-primary btn-arrow btn-red" href="/mapa-pristaveni-kontejneru-praha" title="Zobrazit mapu a čas přistavení">Mapa a čas přistavení <i class="fa-solid fa-angles-right"></i></a>
+                                </ul>
+                            </div>
+                            <script>
+                            	$(document).ready(function(){
+									$(".deliverySelect").change(function(){
+										changeDelivery();
+									});
+									
+									changeDelivery();
+									
+									function changeDelivery(){
+										if($(".deliverySelect option:selected").val()!=""){
+											var selOption = $(".deliverySelect option:selected");
+											$(".standardDelivery").text(selOption.data("term"));
+											$(".standardUnit").text(selOption.data("termunit"));
+											$(".turbodelivery").text(selOption.data("turboterm"));
+											$(".turbounit").text(selOption.data("turbounit"));
+											$(".deliveryBlock").show();
+										}
+									}
+									
+									$(".formFieldVat").change(function(e){
+										e.preventDefault();
+										var checked = $(this).prop("checked");
+										if(checked){
+											var link = $(this).data("on");
+										}
+										else{
+											var link = $(this).data("off");
+										}
+										$.get(link);
+									});
+									
+                            	});
+                            </script>
+                        </div>
+                        <!-- ./speed -->
+                    </div>
+                    <!-- ./container content -->
+                </div>
+            </div>
+            <!-- ./row -->
+            <img class="stripe" src="{$basePath}/img/stripe.png" alt="Obrázek pruhů">
+        </div>
+        <!-- ./filter -->
+        <img class="mosaic left" src="{$basePath}/img/mosaic_s6.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+        <img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+        <div class="rectangle"></div>
+    </section>
+    <!-- ./top -->
+    <div class="waste-type-rectangle"></div>
+{/block}
+
+{block modals}
+     {var $container = $product}
+     <div class="modal" id="container-{$container->alias}Modal" tabindex="-1" aria-labelledby="container-3m3-3tunyLabel" aria-hidden="true" n:if="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <h2>{$paVals[2]->name}{$paVals[2]->ref("attribute")->unit|noescape} / {$paVals[3]->name}{$paVals[3]->ref("attribute")->unit|noescape}{if !empty($container->perex)} <span>{$container->perex}</span>{/if}</h2>
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                    {form addToOrderForm}
+                    	{input isContainer, value=>"1"}
+                    	{var $prices = $presenter->productManager->getPrices($container->id)}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        Druh odpadu
+                                    </td>
+                                    <td>
+                                        Cena kontejneru
+                                    </td>
+                                    <td>
+                                        Počet
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr n:foreach="$prices as $price">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" name="prices[{$price->id}]"> <a {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" href="#container-{$container->alias}{$price->id}"{/if} role="button" aria-expanded="false" aria-controls="container-{$container->alias}{$price->id}" title="Co sem patří a nepatří?">{$attVals[$price->attributeValue]->name}</a>
+                                        <div class="collapse type-description" id="container-{$container->alias}{$price->id}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+                                            {$attVals[$price->attributeValue]->desc|noescape}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {if $price->type==1}
+                                        	{$price->priceFrom*$vat->koef|number:0:',':' '} <em>Kč</em>{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} <em>Kč</em>{/if}
+                                        {/if}
+                                        {if $price->type==2}
+                                        	{$price->text}
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <label class="select">
+                                            <select name="amounts[{$price->id}]">
+                                                <option n:for="$i=1;$i<=5;$i++" value="{$i}">{$i}</option>
+                                            </select>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary btn-arrow btn-white btn-cancel cancelRow" href="#" title="Objednat kontejner">Zrušit <i class="fa-solid fa-xmark"></i></a>
+                                        <a class="btn btn-primary btn-arrow btn-white includeRow" href="#" title="Objednat kontejner">Vybrat <i class="fa-solid fa-angles-right"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <span class="vat">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH</span>
+                                        <button class="btn btn-primary btn-arrow btn-red orderButton disabled" title="Objednat kontejner">Přejít do objednávky <i class="fa-solid fa-angles-right"></i></button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    {/form}
+                </div>
+            </div>
+        </div>
+        <div class="modal-rectangle">
+            <img class="stripe" src="{$basePath}/img/stripe-modal.png" alt="Obrázek pruhů">
+            <img class="cars" src="{$basePath}/img/cars-modal.png" alt="Obrázek Siegl aut">
+        </div>
+    </div>
+{/block}
+{block scripts}
+    <script>
+    	$(document).ready(function(){
+			$(".accordion-button").click(function(){
+				$(this).find(".variantRadio").prop("checked", true);
+				$(".variantRadio").closest(".accordion-item").removeClass("active");
+				$(this).closest(".accordion-item").addClass("active");
+			});
+			$(".variantRadio").click(function(){
+				$(this).closest(".accordion-button").trigger("click");
+			});
+			$(".orderContainer").click(function(e){
+				e.preventDefault();
+				var link = {link addToOrderC!};
+				link = link + "&c="+$(this).data("id");
+				var checkedRadio = $(this).closest(".sidebar-container").find(".variantRadio:checked");
+				if(checkedRadio.length > 0){
+					link = link + "&p="+checkedRadio.val();
+				}
+				$.get(link);
+			});
+    	});
+    	
+    </script>
+{/block}

@@ -1,0 +1,47 @@
+{layout ../@layout.latte}
+{block content}
+	<div class="subpages pragues trash">
+		<div class="container">
+			<h1 class="title underline">{$page->name}</h1>
+			{block subcontent}
+				<article class="article">
+		    		{$page->content|noescape}
+		    		{$page->content_continuation|noescape}
+		    	</article>
+		    	<h2 n:if="count($subpagesYes)>0" class="title">Likvidujeme</h2>
+		    	<div class="row justify-content-center">
+					<div class="col-12 col-md-4" n:foreach="$subpagesYes as $sp" data-aos="fade-in" data-aos-duration="150" data-aos-delay="{25 + ($iterator->counter*25)}">
+						<div class="col-subpage">
+							{var $mainImage = $presenter->pageManager->getMainPhoto($sp->id)}
+							<a href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}"><img src="{$mainImage|thumb:300:200}" alt="{$sp->name}" /></a>
+							<h2><a href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}">{if !empty($sp->name_menu)}{$sp->name_menu}{else}{$sp->name}{/if}</a></h2>
+							<div class="date" n:if="!empty($sp->date)">{$sp->date|date:"d. m. Y"}</div>
+							{$sp->content|noescape}
+							<a class="btn btn-primary btn-arrow btn-red btn-without-arrow" href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}">Vybrat</a>
+						</div>
+					</div>
+				</div>
+		    	<h2 n:if="count($subpagesNo)>0" class="title">Nelikvidujeme</h2>
+		    	<div class="row justify-content-center">
+					<div class="col-12 col-md-4" n:foreach="$subpagesNo as $sp" data-aos="fade-in" data-aos-duration="150" data-aos-delay="{25 + ($iterator->counter*25)}">
+						<div class="col-subpage">
+							{var $mainImage = $presenter->pageManager->getMainPhoto($sp->id)}
+							<a href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}"><img src="{$mainImage|thumb:300:200}" alt="{$sp->name}" /></a>
+							<h2><a href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}">{if !empty($sp->name_menu)}{$sp->name_menu}{else}{$sp->name}{/if}</a></h2>
+							<div class="date" n:if="!empty($sp->date)">{$sp->date|date:"d. m. Y"}</div>
+							{$sp->content|noescape}
+							<a class="btn btn-primary btn-arrow btn-red btn-without-arrow" href="{if $sp->type=='1'}{$sp->link}{else}{link :Front:Homepage:page $sp->alias}{/if}">Vybrat</a>
+						</div>
+					</div>
+				</div>
+		  	{/block}
+		</div>
+	</div>
+	<div class="page-bottom-navigation">
+        {include '../_parts/footerMenu.latte', class=>''}
+        <!-- ./bottom navigation -->
+    </div>
+    <!-- ./page bottom navigation -->
+	<img class="mosaic left" src="{$basePath}/img/mosaic_s2.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+{/block}

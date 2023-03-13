@@ -1,0 +1,52 @@
+{layout ../@layout.latte}
+{block content}
+		
+	{foreach $products as $hp}
+		{if $iterator->counter==1}
+			<div class="top-produkt" style="background-image: url({$hp|thumb})">
+				<a class="btn-detail" n:href=":Front:Homepage:product $hp->alias"></a>
+				<div class="top-produkt-title">
+					<span>{$hp->name}</span>
+					<a class="btn btn-primary"  n:href=":Front:Homepage:products">Podívám se</a>
+				</div>
+			</div>
+		{elseif $iterator->counter==2}
+			<div class="banner big" style="background-image: url({$basePath}/images/galerie/{$hp|thumb})"><a n:href=":Front:Homepage:product $hp->alias"><span>{$hp->name}</span></a></div>
+		{else}
+			<div class="banner small" style="background-image: url({$basePath}/images/galerie/{$hp|thumb})"><a n:href=":Front:Homepage:product $hp->alias"><span>{$hp->name}</span></a></div>
+		{/if}
+	{/foreach}
+	<div class="clearfix"></div>
+	<!-- ./banners -->
+	<div class="motto small">
+		- nákupem podpoříš naši tvorbu a prodej piva
+	</div>
+	<!-- ./motto -->
+	<div class="about-us">
+		<span class="title">erem</span>
+		<div class="row">
+			<div class="col-md-6">
+				<p>Když člověk slyší název <strong>erem</strong>, mohlo by to v něm vyvolávat pocit, že se jedná o fabriku na autodíly v německém pohraničí. No, a ono to tak není.</p> <p>Ve skutečnosti je <strong>erem</strong> totiž  partička kluků ze Sudet žijících v Praze, co rádi pijou pivko, baví se s kámošema, padají ze schodů a u toho drží v ruce kameru. Ten malej vpravo, co vypadá jak zhulenej, tak to je Marty. Nalevo stojí Jakub, možná ho někteří znáte pod přezdívkou MC Kadilak. Oběma je něco málo přes dvacet, ale vypito už toho mají jako průměrnej řidič náklaďáku.</p>
+			</div>
+			<div class="col-md-6">
+				<p>Všechno začalo okolo roku 2009, kdy Marty procházel tvrdou pubertou a společně s kámošem Řehim založili RM-Movie a natáčeli sketche na Stream.cz. Pro ty z vás, kdo se narodili po roce 2000, tak Stream byl něco jako YouTube, akorát český. V šestý třídě na těláku se kluci seznámili s Jakub a začali tvořit společně. Řehi a Vašek se po nějaký době s klukama rozloučili, a tak vznikla dnešní podoba <strong>erem</strong>, jak ji známe.</p> <p>Tvorba kluků se každým rokem měnila. Sketche vymyšlený na kolenou, tak střídal pořad o YouTube novinkách a poté následovala Středeční poezii s MC Kadilakem až se nakonec kluci v roce 2015 dostali k vlogům. Vlogy jsou aktuálně největší náplní jejich tvorby a kromě samotného Martyho a Jakub v nich můžete vidět také jejich kamarády a různé lidi z české hudební scény mezi kterými mají spoustu přátel.</p>
+			</div>
+		</div>
+	</div>
+	<!-- ./about us -->
+	<div class="photos">
+		<div class="photo-block">
+			<a target="_blank" href="https://www.instagram.com/eremvole/"><img class="img-fluid" src="../files/IMG_9562.png" /></a>
+			<a target="_blank" href="https://www.instagram.com/eremvole/"><img class="img-fluid" src="../files/Roll1_00000029.png" /></a>
+		</div>
+		<div class="photo-block">
+			<a target="_blank" href="https://www.instagram.com/eremvole/"><img class="img-fluid" src="../files/ceiFyEP_02.png" /></a>
+			<a target="_blank" href="https://www.instagram.com/eremvole/"><img class="img-fluid" src="../files/000282580026.png" /></a>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<!-- ./photos -->
+	<div class="motto big">
+		Nevěř ženě, která lže
+	</div>
+{/block}

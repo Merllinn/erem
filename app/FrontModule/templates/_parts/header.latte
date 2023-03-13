@@ -1,0 +1,94 @@
+	<div class="free-shipping">Doprava zdarma nad 1500,- <i class="fas fa-shipping-fast"></i></div>
+	<header>
+		<div class="container">
+			<nav class="navbar navbar-expand-md">
+				<a class="navbar-brand" n:href=":Front:Homepage:page ''"><img src="{$basePath}/img/logo.png" alt="Erem logo" /></a>
+				<div class="form-mobile form-inline my-2 my-lg-0">
+						<a href='proces/nakupni-kosik/index.html' class='basket empty'><img src='https://eremvole.cz/img/basket-empty.svg' /><span class='basket'>Prázdný</span></a>					                    <div class="form-inline login-form">
+                        <ul class="navbar-nav mr-auto">
+                            <li>
+                            	<div class="dropdown">
+                                        <a class="dropdown-toggle" href="#" role="button" id="userBoxLogin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user" aria-hidden="true"></i></a>
+                                        <div class="dropdown-menu" aria-labelledby="userBoxLogin">
+                                            <div class="user-box">
+                                                {form loginForm}
+                                                    <div class="email">
+                                                        {input login, class=>'form-control', placeholder=>'Uživatelské jméno'}
+                                                    </div>
+                                                    <div class="password">
+                                                        {input pass, class=>'form-control', placeholder=>'Heslo'}
+                                                    </div>
+                                                    {input submit, class=>'btn btn-primary'}
+                                                    <div class="group">
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item">
+                                                                <a class='register' href='proces/registrace/index.html'>Nová registrace</a>
+                                                            </li>
+                                                            <li class="list-inline-item">
+                                                                <a class='password' href='neznam-heslo/index.html'>Zapomenuté heslo</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {/form}
+                                            </div>
+                                        </div>
+                                    </div>
+                                                            </li>
+                        </ul>
+                    </div>
+				</div>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navigation">
+					<ul class="navbar-nav mr-auto">
+						{var $productsPage = $presenter->pageManager->findByLayout(13)}
+						<li class='nav-item'><a class='nav-link ' n:href=':Front:Homepage:page $productsPage->alias'>{$productsPage->name}</a></li>
+						<li class='nav-item category category{$cat->id}' n:foreach="$categories as $cat">
+							<a class='nav-link ' n:href=':Front:Homepage:page id=>$productsPage->alias, cat=>$cat->alias'>{$cat->name}</a>
+						</li>
+					</ul>
+                    <div class="form-inline login-form">
+                        <ul class="navbar-nav mr-auto">
+                            <li>
+                            	<div class="dropdown">
+                                        <a class="dropdown-toggle" href="#" role="button" id="userBoxLogin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Přihlášení</a>
+                                        <div class="dropdown-menu" aria-labelledby="userBoxLogin">
+                                            <div class="user-box">
+                                                {form loginForm}
+										            <script n:if="$form->hasErrors()">
+										            	{foreach $form->errors as $error}
+										            		alert({$error});
+										            	{/foreach}
+										            </script>
+                                                    <div class="email">
+                                                        {input login, class=>'form-control', placeholder=>'Uživatelské jméno'}
+                                                    </div>
+                                                    <div class="password">
+                                                        {input pass, class=>'form-control', placeholder=>'Heslo'}
+                                                    </div>
+                                                    {input submit, class=>'btn btn-primary'}
+                                                    <div class="group">
+                                                        <ul class="list-inline">
+                                                            <li class="list-inline-item">
+                                                                <a class='register' href='proces/registrace/index.html'>Nová registrace</a>
+                                                            </li>
+                                                            <li class="list-inline-item">
+                                                                <a class='password' href='neznam-heslo/index.html'>Zapomenuté heslo</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {/form}
+                                            </div>
+                                        </div>
+                                    </div>
+                                                            </li>
+                        </ul>
+                    </div>
+					<div class="form-inline my-2 my-lg-0">
+							<li class='list-inline-item'><a href='proces/nakupni-kosik/index.html' class='basket empty'><img src='https://eremvole.cz/img/basket-empty.svg' /><span class='basket'>Košík je prázdný</span></a></li>					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- ./container -->
+	</header>

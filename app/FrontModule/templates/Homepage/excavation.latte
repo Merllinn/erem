@@ -1,0 +1,66 @@
+{layout ../@layout.latte}
+{block content}
+	<div class="subpages pragues">
+		<div class="container">
+			<h1 class="title underline">{$page->name}</h1>
+			{block subcontent}
+				<article class="article">
+		    		{$page->content|noescape}
+		    		{$page->content_continuation|noescape}
+		    	</article>
+		    	<h2 class="title">Provádíme:</h2>
+		    	<div class="row justify-content-center">
+					<div class="col-12 col-md-4" n:foreach="$subpages as $sp" data-aos="fade-in" data-aos-duration="150" data-aos-delay="{25 + ($iterator->counter*25)}">
+						{var $mainImage = $presenter->pageManager->getMainPhoto($sp->id)}
+						{var $sideImages = $presenter->pageManager->getSidePhotos($sp->id)}
+						<div class="col-subpage{if $mainImage->name=='ikonka'} icon-thumb{/if}">
+							{if !empty($sideImages)}
+								<div class="chocolat-parent-{$sp->id}">
+									<a n:foreach="$sideImages as $img" class="chocolat-image" href="{$img|thumb}" title="Zvětšit obrázek">
+										<i class="fa-solid fa-magnifying-glass-plus"></i>
+										{first}
+											{if $mainImage->name=='ikonka'}
+												<img src="{$mainImage|thumb}" alt="{$sp->name}" />
+											{else}
+												<img src="{$mainImage|thumb:600:600}" alt="{$sp->name}" />
+											{/if}
+											<h2>{if !empty($sp->name_menu)}{$sp->name_menu|noescape}{else}{$sp->name}{/if}</h2>
+										{/first}
+									</a>
+								</div>
+								<script>
+									$("document").ready(function(){
+										  Chocolat(document.querySelectorAll('.chocolat-parent-{$sp->id} .chocolat-image'), {})
+									});
+								</script>
+							{else}
+								{if $mainImage->name=='ikonka'}
+									<img src="{$mainImage|thumb}" alt="{$sp->name}" />
+								{else}
+									<img src="{$mainImage|thumb:600:600}" alt="{$sp->name}" />
+								{/if}
+								<h2>{if !empty($sp->name_menu)}{$sp->name_menu|noescape}{else}{$sp->name}{/if}</h2>
+							{/if}
+						</div>
+					</div>
+				</div>
+		  	{/block}
+		</div>
+	</div>
+	<div class="realizations">
+		<div class="container">
+			<h2 class="title underline">Podívejte se na naše realizace</h2>
+			<div class="realizations-carousel">
+				{var $videos = $presenter->commonManager->getSlider()}
+				<div n:foreach="$videos as $video">
+					<div class="video-embed">
+						{$video->embed|noescape}
+					</div>
+					<a href="{$video->link}">{$video->name}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ./realizations -->	
+    {include "../_parts/orderForm2.latte", demandType=>'excavation'}
+{/block}

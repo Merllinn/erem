@@ -1,0 +1,73 @@
+{layout ../@layout.latte}
+{block content}
+	<div class="only-support" style="display: none">
+		<h1 class="title" data-aos="fade-down" data-aos-delay="50" data-aos-duration="350" data-aos-easing="linear">
+			Podpořit nás můžeš jen tak
+		</h1>
+		<p data-aos="fade-in" data-aos-delay="150" data-aos-duration="350" data-aos-easing="linear">
+			Chceš nás podpořit finanční částkou bez fyzické odměny? Tady máš kolonku, kam můžeš pár masaryků naházet.
+		</p>
+		<form  action='https://eremvole.cz/cs/proces/objednavka-dar/' method='post' class="form-inline" data-aos="flip-up" data-aos-delay="200" data-aos-duration="350" data-aos-easing="linear">
+			<div class="row g-4 align-items-center">
+				<div class="col-auto">
+					<input placeholder="Minimálně 50 Kč" type="number" name="given" min="50" id="inputAmount" class="form-control" required="required">
+				</div>
+				<div class="col-auto">
+					<div class="form-check">
+						<input class="form-check-input" name="publish" type="checkbox" id="publish">
+						<label class="form-check-label" for="publish">
+							Zveřejnit v seznamu <abbr title="Pokud budeš chtít, zveřejníme tě v seznamu přispěvovatelů"><i class="bi bi-question-square-fill"></i></abbr>
+						</label>
+					</div>
+				</div>
+				<div id="publish-name" class="col-auto" style="display: none">
+					<div class="input-group">
+						<input placeholder="Jméno" name="customer_name" type="text" id="inputName" class="form-control">
+						<input placeholder="Příjmení" name="customer_surname" type="text" id="inputSurname" class="form-control">
+						<input placeholder="Město" name="address_city" type="text" id="inputCity" class="form-control">
+					</div>
+				</div>
+				<div class="col-auto">
+					<button type="submit" class="btn btn-primary">
+						Podpořit
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		$(document).ready(function(){
+			$("#publish").click(function(){
+				if($("#publish").prop('checked')){
+					$("#publish-name").show();
+				}
+				else{
+					$("#publish-name").hide();
+				}
+			});
+		});
+	</script>
+	<!-- ./only support -->
+	<h1 class="title" style="display: none">
+		Nebo si vyber odměnu za svůj příspěvek
+	</h1>
+	<div class="row row-products">
+		<div class='col-md-4 product-col' n:foreach="$products as $product">
+			<a n:href=':Front:Homepage:product $product->alias' itemscope itemtype='http://schema.org/Product' itemprop='url'>
+				{var $now = new \Nette\Utils\Datetime()}
+				<div class='image{if $product->amount<=0} unavailable{/if}{if $product->availableFrom>$now} preparing{/if}'>
+					{if $product->amount<=0}
+						<span>{_'Úplně vyprodaný'}</span>
+					{/if}
+					{if $product->availableFrom>$now}
+						<div class='countdown-container'><span>{_'V prodeji za'}</span><span class='countdown' data-start='{$product->availableFrom->format("U")}'></span></div>
+					{/if}
+					<img src='{$product|thumb:350:350}' alt='{$product->name}' title='{$product->name}' />
+				</div>
+				<strong itemprop='name'>{$product->name}{if !empty($product->perex)} ({$product->perex}){/if}</strong>
+				<span itemprop='price'>{$product->price|number:0:',':' '} Kč</span>
+			</a>
+		</div>
+	</div>
+	<table class='paginage w100'><tr><td class='tac'></td></tr></table>	
+{/block}

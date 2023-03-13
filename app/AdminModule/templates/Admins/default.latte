@@ -1,0 +1,11 @@
+{block buttons}
+	        <a class="btn btn-primary" n:href=":Admin:Admins:add" n:if="$user->identity->role==9"><i class="fas fa-plus"></i> Přidat administrátora</a>
+{/block}
+
+{block content}
+
+	      <div class="head">
+	        <h1 class="card-title">Administrátoři</h1>
+	      </div>
+	      {control users}
+{/block}

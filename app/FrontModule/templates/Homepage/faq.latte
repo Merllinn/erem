@@ -1,0 +1,27 @@
+{layout ../@layout.latte}
+{block content}
+	<div class="container">
+		<h1 class="title underline">{$page->name}</h1>
+		{block subcontent}
+	    	<div class="row justify-content-center">
+				<div class="accordion accordion-flush accordion-faq chocolat-parent" id="faqs">
+					<div class="accordion-item col-12 col-md-12" n:foreach="$subpages as $sp" data-aos="fade-in" data-aos-duration="150" data-aos-delay="{25 + ($iterator->counter*25)}">
+						<h2><a class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#container-collapse{$sp->id}" href="#">{$sp->name}</a></h2>
+						<div id="container-collapse{$sp->id}"  class="accordion-collapse collapse" data-bs-parent="#faqs">
+							{$sp->content|noescape}
+							{$sp->content_continuation|noescape}
+						</div>
+							{*<a class="btn btn-primary btn-arrow btn-red btn-without-arrow" href="#">Zobrazit</a>*}
+					</div>
+				</div>
+			</div>
+	  	{/block}
+	</div>
+	<div class="page-bottom-navigation">
+        {include '../_parts/footerMenu.latte', class=>''}
+        <!-- ./bottom navigation -->
+    </div>
+    <!-- ./page bottom navigation -->
+	<img class="mosaic left" src="{$basePath}/img/mosaic_s2.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+{/block}

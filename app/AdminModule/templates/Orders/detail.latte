@@ -1,0 +1,173 @@
+{block content}
+    <div class="container fs">
+        <div class="head">
+            <h1 class="card-title">Detail objednávky  č. {$order->id}</h1>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="row">
+            <div class="col col-6">
+				<h4>Místo přistavení</h4>
+				<p>{$order->street} | 
+				<a class="link" href="https://www.google.com/maps/place/{$order->location}" target="_blank">Zobrazit na mapě</a>
+				</p>
+				{if !empty($order->termFrom) && empty($order->termTo)}
+					<h4>Datum dovozu materiálu</h4>
+					<p>{$order->termFrom}</p>
+				{/if}
+				
+				<h4>Údaje o {if !empty($order->ic)}firemním {/if}zákazníkovi</h4>
+			    <table class="table table-striped">
+					<tbody>
+						<tr n:if="!empty($order->ic)">
+							<th>IČ</th>
+							<td>{$order->ic}</td>
+						</tr>
+						<tr n:if="!empty($order->company_name)">
+							<th>Název společnosti</th>
+							<td>{$order->company_name}</td>
+						</tr>
+						<tr>
+							<th>Jméno</th>
+							<td>{$order->name}</td>
+						</tr>
+						<tr>
+							<th>Příjmení</th>
+							<td>{$order->surname}</td>
+						</tr>
+						<tr>
+							<th>E-mail</th>
+							<td>{$order->email}</td>
+						</tr>
+						<tr>
+							<th>Telefon</th>
+							<td>{$order->phone}</td>
+						</tr>
+						<tr n:if="!empty($order->note)">
+							<th>Poznámka</th>
+							<td>{$order->note|breaklines|noescape}</td>
+						</tr>
+						{if $order->different_delivery}
+							<tr>
+								<th colspan="2">Jiná adresa dodání</th>
+							</tr>
+							<tr n:if="!empty($order->delivery_street)">
+								<th>Adresa</th>
+								<td>{$order->delivery_street}</td>
+							</tr>
+							<tr n:if="!empty($order->delivery_city)">
+								<th>Město</th>
+								<td>{$order->delivery_city}</td>
+							</tr>
+							<tr n:if="!empty($order->delivery_zip)">
+								<th>PSČ</th>
+								<td>{$order->delivery_zip}</td>
+							</tr>
+						{/if}
+					</tbody>
+			    </table>
+            </div>
+
+			<div class="orderItems col-6">
+			    {var $containers = array()}
+			    {var $materials = array()}
+			    {foreach $products as $itemId=>$product}
+    				{if $product->type==1}
+    					{php $containers[$itemId] = $product}
+    				{/if}
+    				{if $product->type==2}
+    					{php $materials[$itemId] = $product}
+    				{/if}
+			    {/foreach}
+
+				{if count($containers)>0}
+					<h4>Kontejnery</h4>
+					<table class="table table-striped">
+						<thead>
+							<th>Název</th>
+							<th>Termín</th>
+							<th>Cena/ks</th>
+							<th>Cena celkem</th>
+						</thead>
+						<tbody>
+						<tr n:foreach="$containers as $itemId=>$product" data-id="{$itemId}">
+							<td><strong>{$product->name}</strong></td>
+							<td>{$product->term}</td>
+							<td>
+								{$product->price|number:0:',':' '} Kč
+							</td>
+							<td>
+								{$product->price*$product->quantity|number:0:',':' '} Kč
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				{/if}
+				{if count($materials)>0}
+					<h4>Materiál</h4>
+					<table class="table table-striped">
+						<thead>
+							<th>Název</th>
+							<th>Množství</th>
+							<th>Cena/ks</th>
+							<th>Cena celkem</th>
+						</thead>
+						<tbody>
+						<tr n:foreach="$materials as $itemId=>$product" data-id="{$itemId}">
+							<td><strong>{$product->name}</strong>
+                                {if !empty($product->stone)}
+                                    <br>{$presenter->betonStoneSize[$product->stone]}
+                                {/if}
+                                {if !empty($product->consistence)}
+                                    <br>{$presenter->betonConsistence[$product->consistence]}
+                                {/if}
+							</td>
+							<td>
+								{$product->quantity} {if $product->products_id==$settings->betonProduct}m<sup>3</sup>{else}tun{/if}
+							</td>
+							<td>
+								{$product->price|number:0:',':' '} Kč
+							</td>
+							<td>
+								{$product->price*$product->quantity|number:0:',':' '} Kč
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				{/if}
+				<h4>Cena</h4>
+				<table class="table table-striped">
+					<tbody>
+                        <tr n:if="$order->deliveryPrice>0">
+                            <td colspan="3">Doprava</td>
+                            <td>{$order->deliveryPrice|number:0:',':' '} Kč</td>
+                        </tr>
+						<tr n:if="$order->weekendPrice>0">
+							<td colspan="3">{_'PRIPLATEK_VIKEND_SVATEK'}:</td>
+							<td >{$order->weekendPrice|number:0:',':' '} Kč</td>
+						</tr>
+						<tr n:if="$order->betonPrice>0">
+							<td colspan="3">{_'PRIPLATEK_BETON'}:</td>
+							<td >{$order->betonPrice|number:0:',':' '} Kč</td>
+						</tr>
+						<tr n:if="$order->betonAddPrice>0">
+							<td colspan="3">{_'VIKEND_BETON'}:</td>
+							<td >{$order->betonAddPrice|number:0:',':' '} Kč</td>
+						</tr>
+						<tr>
+							<td colspan="3">Celková cena bez DPH:</td>
+							<td >{$order->price|number:0:',':' '} Kč</td>
+						</tr>
+						<tr>
+							<td colspan="3">Celková cena s DPH:</td>
+							<td >{$order->price_vat|number:0:',':' '} Kč</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+
+    </div>
+
+
+{/block}

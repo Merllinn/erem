@@ -1,0 +1,287 @@
+<html>
+<head>
+	<title>Administrace</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="robots" content="noindex,nofollow" />
+	<link rel="stylesheet" href="{$baseUri}/css/common/bootstrap.min.css">
+	<link rel="stylesheet" href="{$baseUri}/css/common/custom.css">
+	<!-- Icomoon Font Icons css -->
+	<link rel="stylesheet" href="{$baseUri}/fonts/style.css">
+	<!-- Main css -->
+	<link rel="stylesheet" href="{$baseUri}/css/common/main.css">
+	<!-- *************
+		************ Vendor Css Files *************
+	************ -->
+	<!-- DateRange css -->
+	<link rel="stylesheet" href="{$baseUri}/vend/daterange/daterange.css" />	
+
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+    .datagrid-column-header-additions{
+		display: none;
+    }
+    </style>
+</head>
+
+<body>
+
+	<!-- Loading starts -->
+	<div id="loading-wrapper" n:if="false">
+		<div class="spinner-border" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+	<!-- Loading ends -->
+
+	<!-- Header start -->
+	<header class="header">
+		<div class="logo-wrapper">
+			<a href="https://siegl.cz" target="_blank" class="logo">
+				<img src="{$basePath}/img/logo-white.svg" alt="erem logo" />
+			</a>
+			<a n:if="false" href="#" class="quick-links-btn" data-toggle="tooltip" data-placement="right" title="" data-original-title="Quick Links">
+				<i class="icon-menu1"></i>
+			</a>
+		</div>
+		<div class="header-items">
+			<!-- Custom search start -->
+			<div class="custom-search" n:if="false">
+				<input type="text" class="search-query" placeholder="Search here ...">
+				<i class="icon-search1"></i>
+			</div>
+			<!-- Custom search end -->
+
+			<!-- Header actions start -->
+			<ul class="header-actions">
+				<li class="dropdown">
+					<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
+						<span class="user-name">{$user->identity->login}</span>
+						<span class="avatar">{$user->identity->login[0]}<span n:if="false" class="status busy"></span></span>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userSettings">
+						<div class="header-profile-actions">
+							<a n:href="logout!"><i class="icon-log-out1"></i> Odhlásit</a>
+						</div>
+					</div>
+				</li>
+				<li n:if="$user->identity->role==9">
+					<a n:href=":Admin:Settings:" data-toggle="tooltip" data-placement="left" title="" data-original-title="Nastavení">
+						<i class="icon-list"></i>
+					</a>
+				</li>
+			</ul>						
+			<!-- Header actions end -->
+		</div>
+	</header>
+	<!-- Header end -->
+
+	<!-- Screen overlay start -->
+	<div class="screen-overlay"></div>
+	<!-- Screen overlay end -->
+
+		<!-- Container fluid start -->
+		<div class="container-fluid">
+
+
+			<!-- Navigation start -->
+			<nav class="navbar navbar-expand-lg custom-navbar">
+
+				<!-- Note - Toggle Button will display if the screen size is max-width 992px -->
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#WafiAdminNavbar" aria-controls="WafiAdminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon">
+						<i></i>
+						<i></i>
+						<i></i>
+					</span>
+				</button>
+				<div class="collapse navbar-collapse" id="WafiAdminNavbar">
+		            <ul class="navbar-nav mr-auto">
+		            	<li class="nav-item">
+		                    <a class="nav-link {ifCurrent :Admin:Pages:default}active-page{/ifCurrent}" n:href=":Admin:Pages:default">Stránky</a>
+		                </li>
+		                <li class="nav-item dropdown">
+		                    <a class="nav-link dropdown-toggle {ifCurrent :Admin:Categories:default}active-page{/ifCurrent}{ifCurrent :Admin:Products:default}active-page{/ifCurrent}{ifCurrent :Admin:CategoriesM:default}active-page{/ifCurrent}{ifCurrent :Admin:Materials:default}active-page{/ifCurrent}{ifCurrent :Admin:Attributes:default}active-page{/ifCurrent}" href="#" id="catalogDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		                      E-shop
+		                    </a>
+		                    <div class="dropdown-menu" aria-labelledby="catalogDropdown">
+		                      <a class="dropdown-item {ifCurrent :Admin:Categories:default}active-page{/ifCurrent}" n:href=":Admin:Categories:default">Kategorie</a>
+		                      <div class="dropdown-divider"></div>
+		                    	<a class="dropdown-item {ifCurrent :Admin:Products:default}active-page{/ifCurrent}" n:href=":Admin:Products:default">Produkty</a>
+		                      <div class="dropdown-divider"></div>
+		                      <a class="dropdown-item {ifCurrent :Admin:Attributes:default}active-page{/ifCurrent}" n:href=":Admin:Attributes:default">Atributy</a>
+		                      <div class="dropdown-divider"></div>
+		                    </div>
+		                </li>
+		                <li class="nav-item">
+		                    <a class="nav-link {ifCurrent :Admin:Orders:default}active-page{/ifCurrent}" n:href=":Admin:Orders:default">Objednávky</a>
+		                </li>
+		                <li class="nav-item">
+		                    <a class="nav-link {ifCurrent :Admin:Admins:default}active-page{/ifCurrent}" n:href=":Admin:Admins:default">Správci</a>
+		                </li>
+		                <li class="nav-item" n:if="false">
+		                    <a class="nav-link {ifCurrent :Admin:Languages:translates 'cz'}active-page{/ifCurrent}" n:href=":Admin:Languages:translates 'cz'">Textové konstanty</a>
+		                </li>
+		                <li class="nav-item {ifCurrent :Admin:Vouchers:default}active{/ifCurrent}">
+		                    <a class="nav-link" n:href=":Admin:Vouchers:default">Slevové kupóny</a>
+		                </li>
+		            </ul>
+				</div>
+			</nav>
+			<!-- Navigation end -->
+
+
+			<!-- *************
+				************ Main container start *************
+			************* -->
+			<div class="main-container">
+
+
+				<!-- Page header start -->
+				<div class="page-header">
+					{if isset($breadcrumbs)&&count($breadcrumbs)>0}
+						<ol class="breadcrumb">
+							{foreach $breadcrumbs as $breadcrumb}
+								<li class="breadcrumb-item {last}active{/last}">
+									{*if !$iterator->first}<span class="divider">/</span>{/if*}
+									{if $breadcrumb['link']!='' && !$iterator->last}
+										<a href="{$breadcrumb['link']|noescape}" title="">{$breadcrumb['title']}</a>
+									{else}
+										<span>{$breadcrumb['title']}</span>
+									{/if}
+								</li>
+							{/foreach}
+						</ol>
+					{/if}
+
+					<ul class="app-actions" n:if="false">
+						<li>
+							<a href="#" id="reportrange">
+								<span class="range-text"></span>
+								<i class="icon-chevron-down"></i>	
+							</a>
+						</li>
+						<li>
+							<a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Print">
+								<i class="icon-print"></i>
+							</a>
+						</li>
+						<li>
+							<a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Download CSV">
+								<i class="icon-cloud_download"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- Page header end -->
+
+
+				<!-- Content wrapper start -->
+				<div class="content-wrapper">
+				    {snippet flashmessages}
+					<div class="row gutters">
+						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+						    <div id="flashBlock">
+							    <div n:foreach="$flashes as $flash" class="flashMessage  alert alert-success {$flash->type}">
+						            <span>{$flash->message|noescape}</span>
+							    </div>
+						    </div>
+						</div>
+					</div>
+				    {/snippet}
+					
+					<!-- Row starts -->
+					<div class="row gutters">
+						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+							<div class="text-right mb-4">
+									{block buttons}{/block}
+							</div>
+							<div class="card">
+								<div class="card-body">
+									{block content}{/block}
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Row ends -->
+				</div>
+				<!-- Content wrapper end -->
+
+
+			</div>
+			<!-- *************
+				************ Main container end *************
+			************* -->
+
+
+			<!-- Footer start -->
+			<footer class="main-footer">© SIEGL s.r.o. {=date("Y")}</footer>
+			<!-- Footer end -->
+			
+
+		</div>
+		<!-- Container fluid end -->
+
+	<!-- - - - - - /MAIN CONTENT - - - - - -->
+
+	<script src="{$basePath}/js/common/jquery.min.js"></script>
+	<script src="{$basePath}/js/common/bootstrap.bundle.min.js"></script>
+	<script src="{$basePath}/js/common/moment.js"></script>
+
+
+	<!-- *************
+		************ Vendor Js Files *************
+	************* -->
+	<!-- Slimscroll JS -->
+	<script src="{$basePath}/vend/slimscroll/slimscroll.min.js"></script>
+	<script src="{$basePath}/vend/slimscroll/custom-scrollbar.js"></script>
+
+	<!-- Daterange -->
+	<script src="{$basePath}/vend/daterange/daterange.js"></script>
+	<script src="{$basePath}/vend/daterange/custom-daterange.js"></script>
+
+	<!-- Main Js Required -->
+	<script src="{$basePath}/js/common/main.js"></script>
+	<script src="{$basePath}/js/common/main.old.js"></script>
+
+	<script src="{$basePath}/js/common/tinymce/tinymce.min.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script language="javascript" src="{$basePath}/js/common/netteForms.js" ></script>
+    <script language="javascript" src="{$basePath}/js/common/nette.ajax.js" ></script>
+    <script language="javascript" src="{$basePath}/js/common/datagrid.js" ></script>
+    <script>
+        $(document).ready(function(){
+            $.nette.init();
+            
+            tinymce.init({
+                selector: "textarea.wysiwyg",
+                theme: "modern",
+                skin: 'pepper-grinder',
+                     language : 'cs',
+                plugins: [
+                     "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+                     "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+                     "save table contextmenu directionality emoticons template paste textcolor"
+               ],
+               toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+               toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | print preview code ",
+               image_advtab: true ,
+               external_filemanager_path:{$rootFolder}+"/js/common/filemanager/",
+               filemanager_title:"Správa médií" ,
+               external_plugins: { "filemanager" : {$rootFolder}+"/js/common/filemanager/plugin.min.js"},
+               content_css: {$rootFolder}+"/css/bootstrap.css, "+{$rootFolder}+"/css/custom.css",
+               entity_encoding : "raw",
+             });
+
+        });
+    </script>
+    
+    {block scripts}
+    {/block}
+
+
+</body>
+</html>

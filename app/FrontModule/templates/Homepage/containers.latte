@@ -1,0 +1,378 @@
+{layout ../@layout.latte}
+{block content}
+	{var $usedFilter = false}
+    <section class="top containers">
+        <div class="container">
+            <h1 class="title underline">{if !empty($catName)}{=strtolower($catName)}{else}{$page->name}{/if}</h1>
+            <div class="filter">
+                <form action="{link this}" method="get">
+                    <ul class="list-inline" data-aos="fade-in" data-aos-duration="200" data-aos-delay="200">
+                        {var $contAttr = $presenter->attributeManager->getForCont()}
+                        {var $attrTypes = array(1=>"druh-odpadu",2=>"objem",3=>"nosnost")}
+                        <li class="list-inline-item {$attrTypes[$attr->id]}" n:foreach="$contAttr as $attr">
+                            {if !empty($_GET["a".$attr->id])}{php $usedFilter = true}{/if}
+                            <label class="select">
+	                            <select name="a{$attr->id}" class="form-select filterFormField attr{$attr->id}" aria-label="{$attr->name}" >
+	                                <option {if empty($_GET["a".$attr->id])}selected="selected"{/if} value="" {if $attr->id==1}data-cat="kontejnery.htm"{/if}>{$attr->name}</option>
+	                                {var $values = $presenter->attributeManager->getValuesArr($attr->id)}
+									{foreach $values as $key=>$val}
+		                                {var $catAttr = $presenter->categoryManager->findByAttrVal($key)}
+		                                {if $catAttr}
+		                                	<option  {if !empty($_GET["a".$attr->id]) && $_GET["a".$attr->id]==$key}selected="selected"{/if} value="{$key}" data-cat="{$catAttr->alias}">{$val} {$attr->unit|noescape}</option>
+		                                {else}
+		                                	{if isset($allowedAttrs[$attr->id])}
+		                                		{if array_search($key, $allowedAttrs[$attr->id])!== false}
+		                                			<option  {if !empty($_GET["a".$attr->id]) && $_GET["a".$attr->id]==$key}selected="selected"{/if} value="{$key}">{$val} {$attr->unit|noescape}</option>
+		                                		{/if}
+		                                	{else}
+		                                		<option  {if !empty($_GET["a".$attr->id]) && $_GET["a".$attr->id]==$key}selected="selected"{/if} value="{$key}">{$val} {$attr->unit|noescape}</option>
+		                                	{/if}
+		                                {/if}
+	                                {/foreach}
+	                            </select>
+                            </label>
+                        </li>
+                        <!-- ./druh odpadu -->
+                        <li class="list-inline-item turbokontejner">
+                            {if !empty($_GET["t"])}{php $usedFilter = true}{/if}
+                            <div class="form-check">
+                                <label class="form-check-label" for="turbokontejner">
+                                    Turbokontejner
+                                </label>
+                                <input name="t" class="form-check-input filterFormField turboField" type="checkbox" {if !empty($_GET["t"])}checked="checked"{/if} id="turbokontejner">
+                            </div>
+                        </li>
+                        <!-- ./turbokontejner -->
+                    </ul>
+                    <ul class="list-inline vat" data-aos="fade-in" data-aos-duration="200" data-aos-delay="200">
+                        <li class="list-inline-item vat">
+                            <div class="form-check">
+                            	<label class="form-check-label" for="sDPH">
+                            		S DPH
+                            	</label>
+                            	<input class="form-check-input formFieldVat" type="checkbox" data-on="{link setVat! true}" data-off="{link setVat! false}" name="dph" id="sDPH"{if $vat->isWith}checked{/if}>
+                            </div>
+                        </li>
+                        <li class="list-inline-item vat">
+                            <div class="form-check">
+                                <label class="form-check-label" for="sDPH">
+                                    Bez DPH
+                                </label>
+                                <input class="form-check-input formFieldVat" type="checkbox" data-on="{link setVat! false}" data-off="{link setVat! true}" name="dph" id="sDPH"{if !$vat->isWith}checked{/if}>
+                            </div>
+                        </li>
+                        <!-- ./dph -->
+                        <li class="list-inline-item reset">
+                            <button class="btn btn-primary btn-deselect" data-aos="fade-in" data-aos-duration="200" data-aos-delay="300"><a n:href=":Front:Homepage:page $page->alias" n:if="$usedFilter">Zrušit výběr</a></button>
+                        </li>
+                    </ul>
+                </form>
+                <script>
+                	$(document).ready(function(){
+						$(".filterFormField").change(function(e){
+							e.preventDefault();
+							var baselink = "";
+							var link = "";
+							if($(".filterFormField.attr1 option:selected").data("cat")!=""){
+								baselink = "/" + $(".filterFormField.attr1 option:selected").data("cat");
+							}
+							else if($(".filterFormField.attr1 option:selected").attr("value")!=""){
+								link = link + "?a1=" + $(".filterFormField.attr1 option:selected").attr("value");
+							}
+							if($(".filterFormField.attr2 option:selected").attr("value")!=""){
+								if(link.length==0){
+									link = link + "?a2=" + $(".filterFormField.attr2 option:selected").attr("value");
+								}
+								else{
+									link = link + "&a2=" + $(".filterFormField.attr2 option:selected").attr("value");
+								}
+							}
+							if($(".filterFormField.attr3 option:selected").attr("value")!=""){
+								if(link.length==0){
+									link = link + "?a3=" + $(".filterFormField.attr3 option:selected").attr("value");
+								}
+								else{
+									link = link + "&a3=" + $(".filterFormField.attr3 option:selected").attr("value");
+								}
+							}
+							if($(".filterFormField.turboField").prop('checked')){
+								if(link.length==0){
+									link = link + "?t=on";
+								}
+								else{
+									link = link + "&t=on";
+								}
+							}
+							location.href=baselink+link;
+							
+						});
+						
+						$(".formFieldVat").change(function(e){
+							e.preventDefault();
+							var checked = $(this).prop("checked");
+							if(checked){
+								var link = $(this).data("on");
+							}
+							else{
+								var link = $(this).data("off");
+							}
+							$.get(link);
+						});
+                	});
+                </script>
+                <!-- ./form -->
+            </div>
+            <picture>
+                <source class="stripe" srcset="{$basePath}/img/stripe.webp" type="image/webp" alt="Obrázek pruhů">
+                <img class="stripe" src="{$basePath}/img/stripe.png" alt="Obrázek pruhů">
+            </picture>
+        </div>
+        <!-- ./filter -->
+        <picture>
+            <source class="mosaic right" srcset="{$basePath}/img/mosaic_s3.webp" type="image/webp" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+            <img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+        </picture>
+    </section>
+    <!-- ./top -->
+    <section class="products" data-image-src="{$basePath}/img/_MG_4880.webp">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xs-12 col-sm-6 col-lg-4" n:foreach="$containers as $container">
+    				{var $isInAction = false}
+    				{var $prices = $presenter->productManager->getPrices($container->id)}
+    				{foreach $prices as $price}
+    					{if !empty($price->priceOld)}
+    						{var $isInAction = true}
+    					{/if}
+    				{/foreach}
+			        {var $isTurbo = false}
+			        {if $container->categories == '|12|'}
+        				{php $isTurbo = true}
+			        {/if}
+    				{var $paVals = $presenter->getProductAttributeValues($container->attributes)}
+                    <div class="col-container {if $isTurbo}turbocontainer{/if}{if $container->noOnlineOrder} noOrder{/if}">
+                        <h2>
+                        	{if $isTurbo}
+                        		<a target="_blank" href="https://turbokontejnery.cz/">{$container->name}</a>
+                        	{else}
+                        		<a n:href=":Front:Homepage:container $container->alias" title="Přejít na detail kontejneru">{$paVals[2]->name}{$paVals[2]->ref("attribute")->unit|noescape} / {$paVals[3]->name}{$paVals[3]->ref("attribute")->unit|noescape}{if !empty($container->perex)} <span>{$container->perex}</span>{/if}</a>
+                        	{/if}
+                        	 {if $isInAction}<span class="action">akce</span>{/if}
+                        </h2>
+                        {var $mainImg = $presenter->productManager->getMainPhoto($container->id)}
+                        <div class="container-image">
+                            {if $isTurbo}
+                                <a target="_blank" href="https://turbokontejnery.cz/" title="Přejít na detail kontejneru">{$mainImg|webpImage:null:null:$container->name}</a>
+                            {else}
+                                <a n:href=":Front:Homepage:container $container->alias" title="Přejít na detail kontejneru">{$mainImg|webpImage:null:null:$container->name}</a>
+                            {/if}
+                        </div>
+                        <div class="accordion accordion-flush chocolat-parent" id="containers{$container->id}">
+                            {if $isTurbo}
+                            	{$container->description|noescape}
+                            {else}
+	                            {var $prices = $presenter->productManager->getPrices($container->id)}
+	                            <div class="accordion-item" n:foreach="$prices as $price" n:if="empty($catAttrib) || $catAttrib==$price->attributeValue">
+	                                <div class="accordion-header" id="container-{$price->id}">
+                                        {if $container->noOnlineOrder}
+    	                                    <button class="accordion-button collapsed noOrder {if empty($attVals[$price->attributeValue]->desc)}empty{/if}" type="button" {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" data-bs-target="#container-collapse{$price->id}"{/if} aria-expanded="false" aria-controls="{$price->id}">
+    	                                        <em>{$attVals[$price->attributeValue]->name}</em>
+    	                                        {if $price->type==1}
+                                            		<span class="price">{$price->priceFrom*$vat->koef|number:0:',':' '} Kč{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} Kč{/if}{if !empty($price->priceOld)}<em class="priceOld"><abbr title="Původní cena">{$price->priceOld*$vat->koef|number:0:',':' '} Kč</abbr></em>{/if}</span>
+    	                                        {/if}
+    	                                        {if $price->type==2}
+                                            		<span class="price">{$price->text}</span>
+    	                                        {/if}
+    	                                    </button>
+                                        {else}
+                                            <button class="accordion-button collapsed {if empty($attVals[$price->attributeValue]->desc)}empty{/if}" type="button" {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" data-bs-target="#container-collapse{$price->id}"{/if} aria-expanded="false" aria-controls="{$price->id}">
+                                                <input class="variantRadio form-check-input" type="radio" name="variant" value="{$price->id}" />
+                                                <em>{$attVals[$price->attributeValue]->name}</em>
+                                                {if $price->type==1}
+                                                    <span class="price">{$price->priceFrom*$vat->koef|number:0:',':' '} Kč{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} Kč{/if}{if !empty($price->priceOld)}<em class="priceOld"><abbr title="Původní cena">{$price->priceOld*$vat->koef|number:0:',':' '} Kč</abbr></em>{/if}</span>
+                                                {/if}
+                                                {if $price->type==2}
+                                                    <span class="price">{$price->text}</span>
+                                                {/if}
+                                            </button>
+                                        {/if}
+	                                </div>
+	                                <div id="container-collapse{$price->id}" class="accordion-collapse collapse" aria-labelledby="container-{$price->id}" data-bs-parent="#containers{$container->id}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+	                                    <div class="accordion-body">
+	                                        {$attVals[$price->attributeValue]->desc|noescape}
+	                                        {if !empty($attVals[$price->attributeValue]->file)}
+                                        		<a href="{$attVals[$price->attributeValue]|thumb}" class="chocolat-image" title="Zobrazit obrázek">Více viz foto</a>
+	                                        {/if}
+	                                    </div>
+	                                </div>
+	                            </div>
+                            {/if}
+                        </div>
+                        <!-- ./prices -->
+                        {if !$isTurbo}
+                            <ul class="list-unstyled lease">
+                                <li>Víkendový příplatek: {$settings->holidayPrice*$vat->koef} Kč</li>
+                                <li>Pronájem kontejneru nad 4 dny: {100*$vat->koef} Kč/den</li>
+                            </ul>
+                        {/if}
+                        <span class="without-vat" n:if="!$isTurbo">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH</span>
+                        {if $container->noOnlineOrder}
+	                        <a class="btn btn-primary btn-arrow btn-red" href="tel:602203044" title="Objednat telefonicky">602 20 30 44 <i class="fa-solid fa-angles-right"></i></a>
+                        {else}
+	                        <button type="button" class="btn btn-primary btn-arrow btn-red orderContainer" data-id="{$container->id}" title="Objednat vybraný kontejner">Objednat online <i class="fa-solid fa-angles-right"></i></button>
+                        {/if}
+                        {if $isTurbo}
+                        	<a class="container-detail" target="_blank" href="https://turbokontejnery.cz/" title="Přejít na detail kontejneru">Více informací</a>
+                        {else}
+                        	<a class="container-detail" n:href=":Front:Homepage:container $container->alias" title="Přejít na detail kontejneru">Detail kontejneru</a>
+                        {/if}
+                    </div>
+                    <!-- ./col container -->
+                </div>
+            </div>
+            <!-- ./containers row -->
+        </div>
+        <!-- ./container -->
+        <div class="categoryDesc bottom" n:if="!empty($catDesc) && $usedFilter">
+            <div class="container">
+                {$catDesc|noescape}
+            </div>
+        </div>
+        <div class="categoryDesc bottom" n:if="!empty($page->content) && !$usedFilter">
+            <div class="container">
+                {$page->content|noescape}
+            </div>
+        </div>
+        <div class="container">
+            <div class="help">
+                Nevíte si rady s výběrem vhodného kontejneru?
+                <span>Zavolejte nám na 602 20 30 44</span>
+            </div>
+            <!-- ./help -->
+            <div class="calculation-bar">
+                Kalkulace do 24 hodin
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        Individuální ceny
+                    </li>
+                    <li class="list-inline-item">
+                        Množstevní slevy
+                    </li>
+                </ul>
+                <a class="btn btn-primary btn-arrow btn-white" href="/poptavka" title="Poptat přistavení kontejneru">Poptávka <i class="fa-solid fa-angles-right"></i></a>
+            </div>
+            <!-- ./calculation -->
+        </div>
+        <!-- ./container -->
+        {include '../_parts/footerMenu.latte', class=>'background'}
+        <!-- ./bottom navigation -->
+        <div class="rectangle"></div>
+        <!-- ./rectangle -->
+    </section>
+    <!-- ./products -->
+{/block}
+
+{block modals}
+     <div n:foreach="$containers as $container" class="modal" id="container-{$container->alias}Modal" tabindex="-1" aria-labelledby="container-3m3-3tunyLabel" aria-hidden="true" n:if="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            	{var $paVals = $presenter->getProductAttributeValues($container->attributes)}
+                <h2>{$paVals[2]->name}{$paVals[2]->ref("attribute")->unit|noescape} / {$paVals[3]->name}{$paVals[3]->ref("attribute")->unit|noescape}{if !empty($container->perex)} <span>{$container->perex}</span>{/if}</h2>
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                    {form addToOrderForm}
+                    	{input isContainer, value=>"1"}
+                    	{var $prices = $presenter->productManager->getPrices($container->id)}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        Druh odpadu
+                                    </td>
+                                    <td>
+                                        Cena kontejneru
+                                    </td>
+                                    <td>
+                                        Počet
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr n:foreach="$prices as $price">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" name="prices[{$price->id}]"> <a {if !empty($attVals[$price->attributeValue]->desc)}data-bs-toggle="collapse" href="#container-{$container->alias}{$price->id}"{/if} role="button" aria-expanded="false" aria-controls="container-{$container->alias}{$price->id}" title="Co sem patří a nepatří?">{$attVals[$price->attributeValue]->name}</a>
+                                        <div class="collapse type-description" id="container-{$container->alias}{$price->id}" n:if="!empty($attVals[$price->attributeValue]->desc)">
+                                            {$attVals[$price->attributeValue]->desc|noescape}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {if $price->type==1}
+                                        	{$price->priceFrom*$vat->koef|number:0:',':' '} <em>Kč</em>{if $price->priceFrom<$price->priceTo} - {$price->priceTo*$vat->koef|number:0:',':' '} <em>Kč</em>{/if}
+                                        {/if}
+                                        {if $price->type==2}
+                                        	{$price->text}
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        <label class="select">
+                                            <select name="amounts[{$price->id}]">
+                                                <option n:for="$i=1;$i<=5;$i++" value="{$i}">{$i}</option>
+                                            </select>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary btn-arrow btn-white btn-cancel cancelRow" href="#" title="Objednat kontejner">Zrušit <i class="fa-solid fa-xmark"></i></a>
+                                        <a class="btn btn-primary btn-arrow btn-white includeRow" href="#" title="Objednat kontejner">Vybrat <i class="fa-solid fa-angles-right"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4">
+                                        <span class="vat">Ceny jsou {if $vat->isWith}s{else}bez{/if} DPH</span>
+                                        <button class="btn btn-primary btn-arrow btn-red orderButton disabled" title="Objednat kontejner">Přejít do objednávky <i class="fa-solid fa-angles-right"></i></button>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    {/form}
+                </div>
+            </div>
+        </div>
+        <div class="modal-rectangle">
+            <picture>
+                <source class="stripe" srcset="{$basePath}/img/stripe-modal.webp" type="image/webp" alt="Obrázek pruhů">
+                <img class="stripe" src="{$basePath}/img/stripe-modal.png" alt="Obrázek pruhů">
+            </picture>
+            <picture>
+                <source class="stripe" srcset="{$basePath}/img/cars-modal.webp" type="image/webp" alt="Obrázek Siegl aut">
+                <img class="stripe" src="{$basePath}/img/cars-modal.png" alt="Obrázek Siegl aut">
+            </picture>
+        </div>
+    </div>
+{/block}
+{block scripts}
+    <script>
+    	$(document).ready(function(){
+			$(".accordion-button").click(function(){
+				$(this).find(".variantRadio").prop("checked", true);
+				$(".variantRadio").closest(".accordion-item").removeClass("active");
+				$(this).closest(".accordion-item").addClass("active");
+			});
+			$(".variantRadio").click(function(){
+				$(this).closest(".accordion-button").trigger("click");
+			});
+			$(".orderContainer").click(function(e){
+				e.preventDefault();
+				var link = {link addToOrderC!};
+				link = link + "&c="+$(this).data("id");
+				var checkedRadio = $(this).closest(".col-container").find(".variantRadio:checked");
+				if(checkedRadio.length > 0){
+					link = link + "&p="+checkedRadio.val();
+				}
+				$.get(link);
+			});
+    	});
+    </script>
+{/block}

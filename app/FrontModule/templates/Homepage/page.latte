@@ -1,0 +1,33 @@
+{layout ../@layout.latte}
+{block content}
+	<article class="article">
+		<h1 class="title underline">{$page->name}</h1>
+		<div class="container">
+			{block subcontent}
+		    	{$page->content|noescape}
+		    	{$page->content_continuation|noescape}
+		  	{/block}
+			<div class="gallery chocolat-parent" n:if="count($images)>1">
+				<div class="row">
+					{var $i=0}
+					{foreach $images as $image}
+						{php $i++}
+						<div class="{if $i==1||$i==4}short-image{else}long-image{/if}" data-aos="fade-in" data-aos-duration="150" data-aos-delay="{25 + ($iterator->counter*25)}">
+							<a href="{$image|thumb}" class="chocolat-image">
+								<img src="{$image|thumb:null:800}" alt="" />
+							</a>
+						</div>
+						{if $i==4}{php $i=0}{/if}
+					{/foreach}
+				</div>
+			</div>
+		</div>
+	</article>
+	<img class="mosaic left" src="{$basePath}/img/mosaic_s2.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<div class="page-bottom-navigation">
+        {include '../_parts/footerMenu.latte', class=>''}
+        <!-- ./bottom navigation -->
+    </div>
+    <!-- ./page bottom navigation -->
+{/block}

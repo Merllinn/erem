@@ -1,0 +1,41 @@
+		<ul>
+            {foreach $topPages as $p}
+            {var $children = $presenter->pageManager->getActiveByParent($p->id)}
+                <li class="{if count($children)>0}submenu{/if} {*if !empty($page) && ($page->id==$p->id || (!empty($page->parent) && $p->id==$page->parent))}active{/if*}">
+				    {if count($children)>0}
+					    <a title="{$p->hover}" href="{if $p->type=="1"}{$p->link}{else}{link :Front:Homepage:page $p->alias}{/if}" class="{if !empty($page) && ($p->id==$page->id) || (!empty($page->parent) && $p->id==$page->parent)}active{/if}"><span>{$p->name_menu|noescape}</span></a>
+					    <div class="submenu {if !empty($p->layoutId) && in_array($p->layoutId, array(8, 9))!==false}two-columns{/if}">
+						    <ul n:if="count($children)>0">
+							    <li n:foreach="$children as $c" class="rd-dropdown-item" n:if="$c->active && ($c->layoutId != 22 || $settings->showPricelist)">
+							    	{if $c->layoutId == 22}
+								    	<a target="_blank" title="{$c->hover}" class="" href="{$basePath}/data/original/{$settings->pricelistFile}">{$c->name_menu}</a>
+								    {else}
+								    	<a title="{$c->hover}" class="{if !empty($page) && $c->id==$page->id}active{/if} {if $c->type=='1' && substr($c->link, 0, 4)=="http"}external{/if}" href="{if $c->type=='1'}{$c->link}{else}{link :Front:Homepage:page $c->alias}{/if}">{$c->name_menu}</a>
+								    {/if}
+							    </li>
+						    </ul>
+						    {if !empty($p->layoutId) && $p->layoutId == 8}
+						    	{var $categories = $presenter->categoryManager->getActive(1)}
+							    <ul class="products" n:if="count($categories)>0">
+								    <li n:foreach="$categories as $cat">
+									    <a class="rd-dropdown-link external" href="{$cat->link}" n:if="!empty($cat->link)">{$cat->name}</a>
+									    <a class="rd-dropdown-link" n:href=":Front:Homepage:page $cat->alias" n:if="empty($cat->link)">{$cat->name}</a>
+								    </li>
+							    </ul>
+						    {/if}
+						    {if !empty($p->layoutId) && $p->layoutId == 9}
+						    	{var $categoriesM = $presenter->categoryManager->getActive(2)}
+							    <ul class="products" n:if="count($categoriesM)>0">
+								    <li n:foreach="$categoriesM as $cat">
+									    <a class="rd-dropdown-link external" href="{$cat->link}" n:if="!empty($cat->link)">{$cat->name}</a>
+									    <a class="rd-dropdown-link" n:href=":Front:Homepage:page $cat->alias" n:if="empty($cat->link)">{$cat->name}</a>
+								    </li>
+							    </ul>
+						    {/if}
+					    </div>
+				    {else}
+					    <a title="{$p->hover}" {if $p->outside}target="_blank"{/if} href="{if $p->type=="1"}{$p->link}{else}{link :Front:Homepage:page $p->alias}{/if}" class="{if !empty($page) && ($p->id==$page->id)}active{/if}"><span>{$p->name_menu|noescape}</span></a>
+				    {/if}
+			    </li>
+            {/foreach}
+		</ul>

@@ -1,0 +1,36 @@
+{layout ../@layout.latte}
+{block content}
+    <section class="fleet">
+    	<div class="container">
+	    	<h1 class="title underline">{if !empty($catName)}{=strtolower($catName)}{else}{$page->name}{/if}</h1>
+	    	{var $categores = $presenter->categoryManager->getActiveList(3)}
+	    	<nav>
+				<div class="nav nav-tabs" id="nav-tab" role="tablist">
+					<button n:foreach="$categores as $id=>$name" class="nav-link {first}active{/first}" id="nav-small-tab" data-bs-toggle="tab" data-bs-target="#tab{$id}" type="button" role="tab" aria-controls="tab{$id}" aria-selected="true">{$name}</button>
+				</div>
+			</nav>
+			<div class="tab-content" id="nav-tabContent">
+				<div n:foreach="$categores as $id=>$name" class="tab-pane fade show {first}active{/first}" id="tab{$id}" role="tabpanel" aria-labelledby="tab{$id}-tab">
+					{var $cars = $presenter->productManager->findByCategory($id)}
+					<div n:foreach = "$cars as $car" n:if="$car->active" class="row g-0 align-items-center justify-content-center">
+						<div class="col-md-5 text-center">
+							<img class="img-fluid" src="{$car|thumb:null:294}" alt="Fotografie {$car->name}">
+						</div>
+						<div class="col-md-6 offset-md-1">
+							<h2>{$car->name} <span n:if="!empty($car->perex)">{$car->perex}</span></h2>
+							{$car->description|noescape}
+						</div>
+					</div>
+					<!-- ./row -->
+				</div>
+			</div>
+		</div>
+    </section>
+	<img class="mosaic left" src="{$basePath}/img/mosaic_s2.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<img class="mosaic right" src="{$basePath}/img/mosaic_s3.png" alt="Obrázek mozaiky" data-aos="fade-in" data-aos-delay="350">
+	<div class="page-bottom-navigation">
+        {include '../_parts/footerMenu.latte', class=>''}
+        <!-- ./bottom navigation -->
+    </div>
+    <!-- ./page bottom navigation -->
+{/block}
